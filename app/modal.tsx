@@ -1,28 +1,34 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { db } from "../services/firebaseConfig"; // sesuaikan path
 
 export default function AddNoteModal() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title.trim() || !content.trim()) {
       Alert.alert("Oops", "Judul dan isi catatan wajib diisi");
       return;
     }
 
-    // 🔜 nanti kita ganti ke AsyncStorage / DB
-    console.log("NOTE BARU:", {
-      title,
-      content,
-      createdAt: new Date().toISOString(),
-    });
+    try {
+      await addDoc(collection(db, "notes"), {
+        title: title.trim(),
+        content: content.trim(),
+        createdAt: serverTimestamp(),
+      });
 
-    router.back();
+      router.back();
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Gagal", "Catatan gagal disimpan");
+    }
   };
 
   return (
