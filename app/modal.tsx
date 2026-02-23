@@ -4,7 +4,7 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { db } from "../services/firebaseConfig"; // sesuaikan path
+import { db } from "../services/firebaseConfig";
 
 export default function AddNoteModal() {
   const router = useRouter();

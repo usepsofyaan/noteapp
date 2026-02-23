@@ -1,33 +1,37 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { collection, onSnapshot, orderBy, query, Timestamp } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { db } from "../../services/firebaseConfig";
 
 type Note = {
   id: string;
   title: string;
   content: string;
-  createdAt: string;
+  createdAt?: Timestamp;
 };
 
 export default function HomeScreen() {
   const router = useRouter();
 
-  const [notes] = useState<Note[]>([
-    {
-      id: "1",
-      title: "Catatan Pertama",
-      content: "Ini adalah isi catatan pertama",
-      createdAt: "10 Feb 2026",
-    },
-    {
-      id: "2",
-      title: "Belajar Expo Router",
-      content: "Struktur app/ jauh lebih rapi",
-      createdAt: "10 Feb 2026",
-    },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
+
+  useEffect(() => {
+    const q = query(collection(db, "notes"), orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const notesData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Note[];
+
+      setNotes(notesData);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const renderItem = ({ item }: { item: Note }) => (
     <TouchableOpacity style={styles.card}>
@@ -35,7 +39,7 @@ export default function HomeScreen() {
       <Text style={styles.content} numberOfLines={2}>
         {item.content}
       </Text>
-      <Text style={styles.date}>{item.createdAt}</Text>
+      <Text style={styles.date}>{item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString("id-ID") : ""}</Text>
     </TouchableOpacity>
   );
 
