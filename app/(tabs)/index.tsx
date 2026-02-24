@@ -34,11 +34,21 @@ export default function HomeScreen() {
   }, []);
 
   const renderItem = ({ item }: { item: Note }) => (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() =>
+        router.push({
+          pathname: "/note/[id]",
+          params: { id: item.id },
+        })
+      }
+    >
       <Text style={styles.title}>{item.title}</Text>
+
       <Text style={styles.content} numberOfLines={2}>
         {item.content}
       </Text>
+
       <Text style={styles.date}>{item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString("id-ID") : ""}</Text>
     </TouchableOpacity>
   );
