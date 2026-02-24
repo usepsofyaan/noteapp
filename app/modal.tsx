@@ -24,7 +24,10 @@ export default function AddNoteModal() {
         createdAt: serverTimestamp(),
       });
 
-      router.back();
+      setTitle("");
+      setContent("");
+
+      router.replace("/");
     } catch (error) {
       console.error(error);
       Alert.alert("Gagal", "Catatan gagal disimpan");
